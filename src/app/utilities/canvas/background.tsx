@@ -15,7 +15,6 @@ export function drawDots(newCanvas: Canvas) {
         // ctx.lineWidth = 1;
   
         const gridSize = CELL_SIZE * zoom;
-        console.log("Zoom : ", zoom)
         const numCellsX = Math.ceil(newCanvas.width / gridSize);
         const numCellsY = Math.ceil(newCanvas.height / gridSize);
   
