@@ -1,5 +1,4 @@
 "use client";
-// src/Canvas.tsx
 import React, { useEffect, useRef } from 'react';
 import { Canvas, Circle, Point, TPointerEventInfo } from 'fabric';
 
@@ -34,15 +33,6 @@ export const MyCanvas: React.FC = () => {
 
     createGrid(50); // Adjust spacing as needed
 
-    // Handle window resizing
-    const handleResize = () => {
-      newCanvas.setDimensions({ width: window.innerWidth, height: window.innerHeight });
-      newCanvas.clear();
-      createGrid(50);
-    };
-
-    window.addEventListener('resize', handleResize);
-
     // Wheel event for zooming and panning
     const handleWheel = (opt: TPointerEventInfo<WheelEvent>) => {
       const e = opt.e; // Get the native WheelEvent from Fabric.js event wrapper
@@ -67,7 +57,6 @@ export const MyCanvas: React.FC = () => {
     newCanvas.on('mouse:wheel', handleWheel);
 
     return () => {
-      window.removeEventListener('resize', handleResize);
       newCanvas.off('mouse:wheel', handleWheel);
       newCanvas.dispose();
     };
