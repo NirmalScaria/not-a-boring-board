@@ -1,6 +1,8 @@
 "use client";
 import React, { useEffect, useRef } from 'react';
-import { Canvas, Circle, Point, TPointerEventInfo } from 'fabric';
+import { Canvas, Point, TPointerEventInfo } from 'fabric';
+
+const CELL_SIZE = 40;
 
 export const MyCanvas: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -14,38 +16,15 @@ export const MyCanvas: React.FC = () => {
       selection: false,
     });
 
-    // Create grid dots
-    const createGrid = (spacing: number) => {
-      for (let x = 0; x < newCanvas.width!; x += spacing) {
-        for (let y = 0; y < newCanvas.height!; y += spacing) {
-          const dot = new Circle({
-            left: x,
-            top: y,
-            radius: 2,
-            fill: 'black',
-            selectable: false,
-            evented: false,
-          });
-          newCanvas.add(dot);
-        }
-      }
-    };
-
-    createGrid(50); // Adjust spacing as needed
-
-    // Wheel event for zooming and panning
     const handleWheel = (opt: TPointerEventInfo<WheelEvent>) => {
-      const e = opt.e; // Get the native WheelEvent from Fabric.js event wrapper
+      const e = opt.e;
       e.preventDefault();
 
       if (e.ctrlKey) {
-        // Zoom logic
         const zoom = newCanvas.getZoom();
-        const newZoom = zoom * (1 - e.deltaY * 0.01); // Adjust the zoom sensitivity
+        const newZoom = Math.max(0.3, zoom * (1 - e.deltaY * 0.01));
         newCanvas.zoomToPoint({ x: e.offsetX, y: e.offsetY } as Point, newZoom);
-
       } else {
-        // Pan logic (invert the delta values to reverse direction)
         const delta = newCanvas.viewportTransform ? new Point(-e.deltaX, -e.deltaY) : null;
         if (delta) {
           newCanvas.relativePan(delta);
@@ -53,8 +32,45 @@ export const MyCanvas: React.FC = () => {
       }
     };
 
-    // Add wheel event listener
     newCanvas.on('mouse:wheel', handleWheel);
+
+
+    newCanvas.requestRenderAll();
+
+    newCanvas.on('before:render', () => {
+      const ctx = newCanvas.contextTop;
+      ctx.clearRect(0, 0, newCanvas.width, newCanvas.height);
+
+      const zoom = newCanvas.getZoom();
+      const offsetX = newCanvas.viewportTransform[4];
+      const offsetY = newCanvas.viewportTransform[5];
+
+      // ctx.strokeStyle = "#cecece";
+      // ctx.lineWidth = 1;
+
+      const gridSize = CELL_SIZE * zoom;
+      console.log("Zoom : ", zoom)
+      const numCellsX = Math.ceil(newCanvas.width / gridSize);
+      const numCellsY = Math.ceil(newCanvas.height / gridSize);
+
+      const gridOffsetX = offsetX % gridSize;
+      const gridOffsetY = offsetY % gridSize;
+
+      ctx.save();
+      ctx.beginPath();
+      for (let x = 0; x <= numCellsX; x++) {
+        for (let y = 0; y <= numCellsY; y++) {
+          const xCoord = gridOffsetX + x * gridSize;
+          const yCoord = gridOffsetY + y * gridSize;
+          ctx.beginPath();
+          ctx.ellipse(xCoord, yCoord, 1.5, 1.5, 0, 0, 2 * Math.PI);
+          ctx.fillStyle = '#777777';
+          ctx.fill();
+          ctx.closePath();
+        }
+      }
+
+    });
 
     return () => {
       newCanvas.off('mouse:wheel', handleWheel);
