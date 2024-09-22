@@ -3,9 +3,12 @@ import React, { useEffect, useRef } from 'react';
 import { Canvas } from 'fabric';
 import { drawDots } from './utilities/canvas/background';
 import { addPanAndZoom } from './utilities/canvas/panAndZoom';
+import Toolbar from '@/components/Toolbar';
+import { ToolItemName } from './enums/toosl';
 
 export const MyCanvas: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const [currentTool, setCurrentTool] = React.useState<ToolItemName>(ToolItemName.Pencil);
 
   useEffect(() => {
     if (!canvasRef.current) return;
@@ -29,7 +32,7 @@ export const MyCanvas: React.FC = () => {
     };
   }, []);
 
-  return <canvas ref={canvasRef} />;
+  return <><Toolbar currentTool={currentTool} setCurrentTool={setCurrentTool} /><canvas ref={canvasRef} /></>;
 };
 
 export default MyCanvas;
