@@ -1,4 +1,4 @@
-import { Canvas, PencilBrush } from 'fabric';
+import { Canvas, PencilBrush, util } from 'fabric';
 
 export const initializeLaser = (canvas: Canvas) => {
     const pencilBrush = new PencilBrush(canvas);
@@ -13,21 +13,26 @@ export const initializeLaser = (canvas: Canvas) => {
 
         // Function to gradually reduce the stroke width and opacity
         const animatePath = () => {
-            // If both strokeWidth and opacity are above 0, keep reducing them
-            if (path.strokeWidth > 0 || path.opacity > 0) {
-                path.strokeWidth = Math.max(0, path.strokeWidth - 0.2); // Reduce strokeWidth faster
-                path.opacity = Math.max(0, path.opacity - 0.05); // Reduce opacity faster
+            const duration = 200;
+            const startStrokeWidth = path.strokeWidth;
+            const startOpacity = path.opacity;
 
-                // Optionally remove or fade the shadow as the line fades
-                if (path.shadow && path.opacity < 0.5) {
-                    path.shadow.blur = Math.max(0, path.shadow.blur - 0.5); // Gradually reduce shadow blur
+            // Use fabric.util.animate for custom animations
+            util.animate({
+                startValue: 1,
+                endValue: 0,
+                duration: duration,
+                easing: util.ease.easeInOutQuad,
+                onChange: (value) => {
+                    path.set('strokeWidth', startStrokeWidth * value);
+                    path.set('opacity', startOpacity * value);
+                    path.dirty = true;
+                    canvas.requestRenderAll();
+                },
+                onComplete: () => {
+                    canvas.remove(path);
                 }
-
-                canvas.renderAll(); // Re-render canvas
-                requestAnimationFrame(animatePath); // Continue animation
-            } else {
-                canvas.remove(path); // Remove path once it's invisible
-            }
+            });
         };
 
         // Start the animation after a 1-second delay
