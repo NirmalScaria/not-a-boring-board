@@ -3,7 +3,7 @@ import { Canvas, PencilBrush } from 'fabric';
 export const initializeLaser = (canvas: Canvas) => {
     const pencilBrush = new PencilBrush(canvas);
     pencilBrush.width = 3; // Set pencil width
-    pencilBrush.color = '#000'; // Set pencil color
+    pencilBrush.color = 'red'; // Set pencil color
     canvas.freeDrawingBrush = pencilBrush;
     canvas.isDrawingMode = true;
 
