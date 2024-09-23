@@ -1,4 +1,5 @@
 export enum ToolItemName {
     Pencil,
-    Hand
+    Hand,
+    Laser
 }
