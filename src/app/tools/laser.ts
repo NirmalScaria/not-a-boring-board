@@ -1,4 +1,4 @@
-import { Canvas, PencilBrush, util } from 'fabric';
+import { Canvas, FabricObject, PencilBrush, util } from 'fabric';
 
 export const initializeLaser = (canvas: Canvas) => {
     const pencilBrush = new PencilBrush(canvas);
@@ -8,7 +8,8 @@ export const initializeLaser = (canvas: Canvas) => {
     canvas.isDrawingMode = true;
 
     // Listen to the 'path:created' event to capture the drawn path
-    canvas.on('path:created', (event) => {
+    const pathCreatedListener = (event: { path: FabricObject }) => {
+
         const path = event.path;
 
         // Function to gradually reduce the stroke width and opacity
@@ -39,5 +40,14 @@ export const initializeLaser = (canvas: Canvas) => {
         setTimeout(() => {
             animatePath();
         }, 1000);
-    });
+    }
+
+    canvas.on('path:created', pathCreatedListener);
+
+    function dispose() {
+        canvas.off('path:created', pathCreatedListener);
+        canvas.isDrawingMode = false;
+    }
+
+    return dispose;
 };

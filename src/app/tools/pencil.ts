@@ -6,4 +6,8 @@ export const initializePencil = (canvas: Canvas) => {
     pencilBrush.width = 2; // Set pencil width
     canvas.freeDrawingBrush = pencilBrush;
     canvas.isDrawingMode = true; // Enable drawing mode
+    function dispose() {
+        canvas.isDrawingMode = false;
+    }
+    return dispose;
 };
