@@ -1,4 +1,5 @@
 import { ToolItemName } from "@/app/enums/toosl";
+import { initialiseArray } from "@/app/tools/array";
 import { initialiseHand } from "@/app/tools/hand";
 import { initializeLaser } from "@/app/tools/laser";
 import { initializePencil, PencilToolbar } from "@/app/tools/pencil";
@@ -33,6 +34,10 @@ export function switchTools(canvas: Canvas | null, tool: ToolItemName) {
             const disposeLaser = initializeLaser(canvas);
             activeDispose = disposeLaser;
             break;
+        case ToolItemName.Array:
+            const disposeArray = initialiseArray(canvas);
+            activeDispose = disposeArray;
+            break;
     }
 }
 
@@ -43,6 +48,8 @@ export function ToolToolbar({ tool, canvas }: { tool: ToolItemName, canvas: Canv
         case ToolItemName.Hand:
             return <></>
         case ToolItemName.Laser:
+            return <></>
+        case ToolItemName.Array:
             return <></>
     }
     return <div></div>

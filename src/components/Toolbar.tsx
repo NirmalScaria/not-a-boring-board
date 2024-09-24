@@ -2,7 +2,7 @@ import { ToolItemName } from "@/app/enums/toosl";
 import { switchTools, ToolToolbar } from "@/app/utilities/canvas/switchTools";
 import { cn } from "@/lib/utils";
 import { Canvas } from "fabric";
-import { Hand, MousePointer, Pencil } from "lucide-react";
+import { Brackets, Hand, MousePointer, Pencil } from "lucide-react";
 
 export default function Toolbar({ canvas, currentTool, setCurrentTool }: { canvas: Canvas | null, currentTool: ToolItemName, setCurrentTool: (tool: ToolItemName) => void }) {
     return <div className="absolute flex flex-row">
@@ -15,6 +15,9 @@ export default function Toolbar({ canvas, currentTool, setCurrentTool }: { canva
             </ToolSelectionButton>
             <ToolSelectionButton canvas={canvas} tool={ToolItemName.Laser} setCurrentTool={setCurrentTool} currentTool={currentTool} >
                 <MousePointer size={20} className="transition-all group-hover:text-white" />
+            </ToolSelectionButton>
+            <ToolSelectionButton canvas={canvas} tool={ToolItemName.Array} setCurrentTool={setCurrentTool} currentTool={currentTool} >
+                <Brackets size={20} className="transition-all group-hover:text-white" />
             </ToolSelectionButton>
         </div>
         <ToolToolbar tool={currentTool} canvas={canvas} />
