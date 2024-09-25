@@ -35,8 +35,6 @@ class ArrayItem {
                         top: this.y1 - 20,
                         fontSize: 12,
                         fontFamily: 'Helvetica',
-                        selectable: false,
-                        evented: false
                     });
                     const number = Math.floor(Math.random() * 20);
                     const text = new Text(number.toString(), {
@@ -47,8 +45,6 @@ class ArrayItem {
                         top: this.y1 + 1 / 4 * cellWidth,
                         fontSize: cellWidth / 2,
                         fontFamily: 'Helvetica',
-                        selectable: false,
-                        evented: false
                     });
                     const rect = new Rect({
                         left: this.x1 + i * cellWidth,
@@ -58,8 +54,6 @@ class ArrayItem {
                         fill: 'white',
                         stroke: 'black',
                         strokeWidth: 1,
-                        selectable: false,
-                        evented: false
                     });
                     this.rects.push(rect);
                     this.canvas.add(rect);
