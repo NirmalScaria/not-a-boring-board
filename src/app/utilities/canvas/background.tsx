@@ -4,7 +4,7 @@ const CELL_SIZE = 40;
 
 export function drawDots(newCanvas: Canvas) {
     newCanvas.on('before:render', () => {
-        const ctx = newCanvas.contextTop;
+        const ctx = newCanvas.getContext();
         ctx.clearRect(0, 0, newCanvas.width, newCanvas.height);
   
         const zoom = newCanvas.getZoom();

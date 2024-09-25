@@ -18,7 +18,6 @@ export const MyCanvas: React.FC = () => {
     const newCanvas = new Canvas(canvasRef.current, {
       width: window.innerWidth,
       height: window.innerHeight,
-      selection: false,
       freeDrawingCursor: 'crosshair',
     });
 
