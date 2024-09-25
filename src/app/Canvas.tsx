@@ -19,6 +19,7 @@ export const MyCanvas: React.FC = () => {
       width: window.innerWidth,
       height: window.innerHeight,
       freeDrawingCursor: 'crosshair',
+      selection: false,
     });
 
     const panAndZoom = addPanAndZoom(newCanvas);
