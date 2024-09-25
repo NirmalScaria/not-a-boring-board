@@ -17,6 +17,8 @@ export const initialiseMove = (canvas: Canvas) => {
     canvas.on("mouse:up", onMouseUp);
 
     function dispose() {
+        canvas.selection = false;
+        canvas.defaultCursor = "default";
         canvas.off("mouse:down", onMouseDown);
         canvas.off("mouse:up", onMouseUp);
     }
