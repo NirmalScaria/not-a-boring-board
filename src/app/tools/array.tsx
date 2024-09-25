@@ -1,4 +1,4 @@
-import { Canvas, Rect, TPointerEvent, TPointerEventInfo, Text } from 'fabric';
+import { Canvas, FabricObject, Rect, TPointerEvent, TPointerEventInfo, Text } from 'fabric';
 
 class ArrayItem {
     declare x1: number;
@@ -99,7 +99,11 @@ class ArrayItem {
 export const initialiseArray = (canvas: Canvas) => {
     let currentArray: ArrayItem | null = null;
     let isDrawing: boolean = false;
-    canvas.isDrawingMode = false;
+    canvas.isDrawingMode = true;
+    if (canvas.freeDrawingBrush) {
+        canvas.freeDrawingBrush.width = 0;
+        canvas.freeDrawingBrush.color = 'transparent';
+    }
     function startArray(options: TPointerEventInfo<TPointerEvent>) {
         isDrawing = true;
         currentArray = new ArrayItem(canvas, options.pointer.x, options.pointer.y, options.pointer.x, options.pointer.y);
@@ -118,13 +122,27 @@ export const initialiseArray = (canvas: Canvas) => {
         currentArray = null;
         canvas.requestRenderAll();
     }
+
+    // Workaround
+    // If free drawing is disabled while using the array tool, the cursor acts like a selection tool too.
+    // So, if a user clicks on an item and drags, it will move the item along with drawing new array.
+    // To avoid that, here a dummy free drawing brush is enabled with 0 width and transparent color.
+    // To avoid performance issues and clutter, the path is removed immediately after creation.
+    function pathCreated(event: {
+        path: FabricObject;
+    }) {
+        canvas.remove(event.path);
+    }
+
     canvas.on('mouse:down', startArray);
     canvas.on('mouse:move', drawArray);
     canvas.on('mouse:up', endArray);
+    canvas.on('path:created', pathCreated);
     function dispose() {
         canvas.off('mouse:down', startArray);
         canvas.off('mouse:move', drawArray);
         canvas.off('mouse:up', endArray);
+        canvas.off('path:created', pathCreated);
     }
     return dispose;
 };
