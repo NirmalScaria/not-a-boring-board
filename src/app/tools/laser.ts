@@ -1,9 +1,12 @@
-import { Canvas, FabricObject, PencilBrush, util } from 'fabric';
+import { Canvas, FabricObject, PencilBrush, Shadow, util } from 'fabric';
+
+const brushColor = "#fc1919";
 
 export const initializeLaser = (canvas: Canvas) => {
     const pencilBrush = new PencilBrush(canvas);
     pencilBrush.width = 3; // Set pencil width
-    pencilBrush.color = 'red'; // Set pencil color
+    pencilBrush.color = brushColor; // Set pencil color
+    pencilBrush.shadow = new Shadow({ color: brushColor, blur: 15 }); // Add shadow to the pencil
     canvas.freeDrawingBrush = pencilBrush;
     canvas.isDrawingMode = true;
 
