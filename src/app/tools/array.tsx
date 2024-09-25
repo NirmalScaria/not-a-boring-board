@@ -85,7 +85,14 @@ class ArrayItem {
             this.rects = this.rects.slice(0, Math.min(50, cellCount));
         }
     }
-    render() {
+    // Workaround for bug.
+    // Selection feature behaves weird after creating an array.
+    // It magically gets fixed if the items are selected once programmatically and discarded.
+    selectArray() {
+        [...this.rects, ...this.indices, ...this.numbers].forEach(rect => {
+            this.canvas.setActiveObject(rect);
+        })
+        this.canvas.discardActiveObject();
     }
 }
 
@@ -96,15 +103,18 @@ export const initialiseArray = (canvas: Canvas) => {
     function startArray(options: TPointerEventInfo<TPointerEvent>) {
         isDrawing = true;
         currentArray = new ArrayItem(canvas, options.pointer.x, options.pointer.y, options.pointer.x, options.pointer.y);
-        currentArray.render();
     }
+
     function drawArray(options: TPointerEventInfo<TPointerEvent>) {
         if (!isDrawing) return;
         currentArray?.draw(options.pointer.x, options.pointer.y);
         canvas.requestRenderAll();
     }
+
     function endArray() {
+        if (!isDrawing || !currentArray) return;
         isDrawing = false;
+        currentArray.selectArray();
         currentArray = null;
         canvas.requestRenderAll();
     }
