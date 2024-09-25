@@ -1,14 +1,12 @@
-// utilities/canvas/pencil.ts
-import { Canvas, Line, Rect, TPointerEvent, TPointerEventInfo, Text } from 'fabric';
+import { Canvas, Rect, TPointerEvent, TPointerEventInfo, Text } from 'fabric';
 
 class ArrayItem {
     declare x1: number;
     declare y1: number;
     declare x2: number;
     declare y2: number;
-    declare rect: Rect;
-    declare lines: Line[];
     declare indices: Text[];
+    declare rects: Rect[];
     declare numbers: Text[];
     declare canvas: Canvas;
     constructor(canvas: Canvas, x1: number, y1: number, x2: number, y2: number) {
@@ -17,46 +15,19 @@ class ArrayItem {
         this.x2 = x2;
         this.y2 = y2;
         this.canvas = canvas;
-        this.lines = [];
         this.indices = [];
         this.numbers = [];
-        this.rect = new Rect({
-            left: x1,
-            top: y1,
-            width: x2 - x1,
-            height: y2 - y1,
-            fill: 'white',
-            stroke: 'black',
-            strokeWidth: 1,
-            selectable: false,
-            evented: false
-        });
+        this.rects = [];
     }
     draw(x2: number, y2: number) {
-        if(x2 - this.x1 < 5) return;
-        if(y2 - this.y1 < 5) return;
+        if (x2 - this.x1 < 5) return;
+        if (y2 - this.y1 < 5) return;
         this.x2 = x2;
         this.y2 = y2;
         const cellCount = Math.max(0, Math.floor((x2 - this.x1) / (y2 - this.y1)));
         const actualWidth = cellCount * (y2 - this.y1);
         const cellWidth = y2 - this.y1;
-        this.rect.set({ width: actualWidth, height: y2 - this.y1 });
         if (actualWidth > 5) {
-            for (let i = 0; i <= Math.min(50, cellCount); i++) {
-                if (i >= this.lines.length) {
-                    const line = new Line([this.x1 + i * cellWidth, this.y1, this.x1 + i * cellWidth, this.y2], {
-                        stroke: 'black',
-                        strokeWidth: 1,
-                        selectable: false,
-                        evented: false
-                    });
-                    this.lines.push(line);
-                    this.canvas.add(line);
-                }
-                else {
-                    this.lines[i].set({ x1: this.x1 + i * cellWidth, x2: this.x1 + i * cellWidth, y2: this.y2 });
-                }
-            }
             for (let i = 0; i < Math.min(50, cellCount); i++) {
                 if (i >= this.indices.length) {
                     const index = new Text(i.toString(), {
@@ -69,16 +40,29 @@ class ArrayItem {
                     });
                     const number = Math.floor(Math.random() * 20);
                     const text = new Text(number.toString(), {
-                        left: this.x1 + (i + 1/4) * cellWidth,
+                        left: this.x1 + (i + 1 / 4) * cellWidth,
                         width: cellWidth,
                         height: cellWidth,
                         textAlign: 'center',
-                        top: this.y1 + 1/4 * cellWidth,
+                        top: this.y1 + 1 / 4 * cellWidth,
                         fontSize: cellWidth / 2,
                         fontFamily: 'Helvetica',
                         selectable: false,
                         evented: false
                     });
+                    const rect = new Rect({
+                        left: this.x1 + i * cellWidth,
+                        top: this.y1,
+                        width: cellWidth,
+                        height: cellWidth,
+                        fill: 'white',
+                        stroke: 'black',
+                        strokeWidth: 1,
+                        selectable: false,
+                        evented: false
+                    });
+                    this.rects.push(rect);
+                    this.canvas.add(rect);
                     this.numbers.push(text);
                     this.canvas.add(text);
                     this.indices.push(index);
@@ -89,27 +73,25 @@ class ArrayItem {
                     this.numbers[i].set({
                         top: this.y1 + cellWidth / 4,
                         fontSize: cellWidth / 2,
-                        left: this.x1 + (i + 1/4) * cellWidth,
+                        left: this.x1 + (i + 1 / 4) * cellWidth,
                         width: cellWidth,
                         height: cellWidth,
                         textAlign: 'center',
                     });
+                    this.rects[i].set({ left: this.x1 + i * cellWidth, top: this.y1, width: cellWidth, height: cellWidth });
                 }
-            }
-            for (let i = Math.min(50, cellCount) + 1; i < this.lines.length; i++) {
-                this.canvas.remove(this.lines[i]);
             }
             for (let i = Math.min(50, cellCount); i < this.indices.length; i++) {
                 this.canvas.remove(this.indices[i]);
                 this.canvas.remove(this.numbers[i]);
+                this.canvas.remove(this.rects[i]);
             }
-            this.lines = this.lines.slice(0, Math.min(50, cellCount) + 1);
             this.indices = this.indices.slice(0, Math.min(50, cellCount));
             this.numbers = this.numbers.slice(0, Math.min(50, cellCount));
+            this.rects = this.rects.slice(0, Math.min(50, cellCount));
         }
     }
     render() {
-        this.canvas.add(this.rect);
     }
 }
 
