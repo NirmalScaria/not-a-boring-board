@@ -1,13 +1,13 @@
-import { Canvas, FabricObject, Rect, TPointerEvent, TPointerEventInfo, Text } from 'fabric';
+import { Canvas, FabricObject, FabricText, Rect, TPointerEvent, TPointerEventInfo } from 'fabric';
 
 class ArrayItem {
     declare x1: number;
     declare y1: number;
     declare x2: number;
     declare y2: number;
-    declare indices: Text[];
+    declare indices: FabricText[];
     declare rects: Rect[];
-    declare numbers: Text[];
+    declare numbers: FabricText[];
     declare canvas: Canvas;
     constructor(canvas: Canvas, x1: number, y1: number, x2: number, y2: number) {
         this.x1 = x1;
@@ -30,14 +30,14 @@ class ArrayItem {
         if (actualWidth > 5) {
             for (let i = 0; i < Math.min(50, cellCount); i++) {
                 if (i >= this.indices.length) {
-                    const index = new Text(i.toString(), {
+                    const index = new FabricText(i.toString(), {
                         left: this.x1 + i * cellWidth,
                         top: this.y1 - 20,
                         fontSize: 12,
                         fontFamily: 'Helvetica',
                     });
                     const number = Math.floor(Math.random() * 20);
-                    const text = new Text(number.toString(), {
+                    const text = new FabricText(number.toString(), {
                         left: this.x1 + (i + 1 / 4) * cellWidth,
                         width: cellWidth,
                         height: cellWidth,
