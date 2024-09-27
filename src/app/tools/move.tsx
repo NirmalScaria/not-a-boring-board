@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 import { ActiveSelection, Canvas, Group } from "fabric";
-import { Copy, Trash } from "lucide-react";
+import { Copy, Trash, Unlink } from "lucide-react";
 import { useState, useEffect } from "react";
 
 export const initialiseMove = (canvas: Canvas) => {
@@ -31,19 +31,23 @@ export const initialiseMove = (canvas: Canvas) => {
 
 export const MoveToolbar = ({ canvas }: { canvas: Canvas | null }) => {
     const [isObjectSelected, setIsObjectSelected] = useState(false);
+    const [isGroupSelected, setIsGroupSelected] = useState(false);
 
     useEffect(() => {
         if (!canvas) return;
 
         const updateSelection = () => {
             setIsObjectSelected(!!canvas.getActiveObject());
+            setIsGroupSelected(canvas.getActiveObject()?.type == "group");
         };
 
         canvas.on("selection:created", updateSelection);
+        canvas.on("selection:updated", updateSelection);
         canvas.on("selection:cleared", updateSelection);
 
         return () => {
             canvas.off("selection:created", updateSelection);
+            canvas.off("selection:updated", updateSelection);
             canvas.off("selection:cleared", updateSelection);
         };
     }, [canvas]);
@@ -78,6 +82,27 @@ export const MoveToolbar = ({ canvas }: { canvas: Canvas | null }) => {
             }
         }
     }
+    function ungroup() {
+        if (!canvas) return;
+        const activeObject = canvas.getActiveObject();
+        if (activeObject instanceof Group) {
+            const objects = activeObject.getObjects();
+            objects.forEach((object) => {
+                activeObject.remove(object);
+                canvas.add(object);
+            });
+            canvas.remove(activeObject);
+
+            objects.forEach((object) => {
+                object.set('active', true);
+            });
+            
+            const newSelection = new ActiveSelection(objects, 
+            );
+            canvas.setActiveObject(newSelection);
+            canvas.requestRenderAll();
+        }
+    }
     function deleteSelection() {
         if (!canvas) return;
         const activeObject = canvas.getActiveObject();
@@ -109,6 +134,11 @@ export const MoveToolbar = ({ canvas }: { canvas: Canvas | null }) => {
                     className={cn("transition-all group rounded-full p-3 hover:bg-purple-400 active:bg-purple-200 border-2", "border-transparent bg-transparent ")}>
                     <Trash size={20} className="transition-all group-hover:text-white" />
                 </button>
+                {isGroupSelected && <button
+                    onClick={ungroup}
+                    className={cn("transition-all group rounded-full p-3 hover:bg-purple-400 active:bg-purple-200 border-2", "border-transparent bg-transparent ")}>
+                    <Unlink size={20} className="transition-all group-hover:text-white" />
+                </button>}
             </div>
         )}
     </>
