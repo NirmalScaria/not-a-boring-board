@@ -2,7 +2,7 @@ import { ToolItemName } from "@/app/enums/toosl";
 import { initialiseArray } from "@/app/tools/array";
 import { initialiseHand } from "@/app/tools/hand";
 import { initializeLaser } from "@/app/tools/laser";
-import { initialiseMove } from "@/app/tools/move";
+import { initialiseMove, MoveToolbar } from "@/app/tools/move";
 import { initializePencil, PencilToolbar } from "@/app/tools/pencil";
 import { Canvas } from "fabric";
 
@@ -56,6 +56,8 @@ export function ToolToolbar({ tool, canvas }: { tool: ToolItemName, canvas: Canv
             return <></>
         case ToolItemName.Array:
             return <></>
+        case ToolItemName.Move:
+            return <MoveToolbar canvas={canvas} />
     }
     return <div></div>
 }
