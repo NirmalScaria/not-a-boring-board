@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 import { ActiveSelection, Canvas, Group } from "fabric";
-import { Copy, Trash, Unlink } from "lucide-react";
-import { useState, useEffect } from "react";
+import { Copy, Link, Trash } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export const initialiseMove = (canvas: Canvas) => {
     canvas.isDrawingMode = false;
@@ -31,14 +31,14 @@ export const initialiseMove = (canvas: Canvas) => {
 
 export const MoveToolbar = ({ canvas }: { canvas: Canvas | null }) => {
     const [isObjectSelected, setIsObjectSelected] = useState(false);
-    const [isGroupSelected, setIsGroupSelected] = useState(false);
+    const [isMultipleObjectsSelected, setIsMultipleObjectsSelected] = useState(false);
 
     useEffect(() => {
         if (!canvas) return;
 
         const updateSelection = () => {
             setIsObjectSelected(!!canvas.getActiveObject());
-            setIsGroupSelected(canvas.getActiveObject()?.type == "group");
+            setIsMultipleObjectsSelected(canvas.getActiveObject()?.type == "activeselection");
         };
 
         canvas.on("selection:created", updateSelection);
@@ -83,24 +83,14 @@ export const MoveToolbar = ({ canvas }: { canvas: Canvas | null }) => {
             }
         }
     }
-    function ungroup() {
+    function group() {
         if (!canvas) return;
         const activeObject = canvas.getActiveObject();
-        if (activeObject instanceof Group) {
+        if (activeObject instanceof ActiveSelection) {
             const objects = activeObject.getObjects();
-            objects.forEach((object) => {
-                activeObject.remove(object);
-                canvas.add(object);
-            });
-            canvas.remove(activeObject);
-
-            objects.forEach((object) => {
-                object.set('active', true);
-            });
-
-            const newSelection = new ActiveSelection(objects, 
-            );
-            canvas.setActiveObject(newSelection);
+            const group = new Group(objects);
+            canvas.add(group);
+            canvas.setActiveObject(group);
             canvas.requestRenderAll();
         }
     }
@@ -135,11 +125,13 @@ export const MoveToolbar = ({ canvas }: { canvas: Canvas | null }) => {
                     className={cn("transition-all group rounded-full p-3 hover:bg-purple-400 active:bg-purple-200 border-2", "border-transparent bg-transparent ")}>
                     <Trash size={20} className="transition-all group-hover:text-white" />
                 </button>
-                {isGroupSelected && <button
-                    onClick={ungroup}
-                    className={cn("transition-all group rounded-full p-3 hover:bg-purple-400 active:bg-purple-200 border-2", "border-transparent bg-transparent ")}>
-                    <Unlink size={20} className="transition-all group-hover:text-white" />
-                </button>}
+                {
+                    isMultipleObjectsSelected && <button
+                        onClick={group}
+                        className={cn("transition-all group rounded-full p-3 hover:bg-purple-400 active:bg-purple-200 border-2", "border-transparent bg-transparent ")}>
+                        <Link size={20} className="transition-all group-hover:text-white" />
+                    </button>
+                }
             </div>
         )}
     </>
