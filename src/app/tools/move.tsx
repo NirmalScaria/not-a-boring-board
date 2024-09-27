@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 import { ActiveSelection, Canvas, Group } from "fabric";
-import { Copy } from "lucide-react";
+import { Copy, Trash } from "lucide-react";
 
 export const initialiseMove = (canvas: Canvas) => {
     canvas.isDrawingMode = false;
@@ -59,12 +59,35 @@ export const MoveToolbar = ({ canvas }: { canvas: Canvas | null }) => {
             }
         }
     }
+    function deleteSelection() {
+        if (!canvas) return;
+        const activeObject = canvas.getActiveObject();
+        if (activeObject) {
+            if (activeObject.type === "activeselection") {
+                const activeSelection = activeObject as ActiveSelection;
+                const objects = activeSelection.getObjects();
+                canvas.discardActiveObject();
+                objects.forEach((object) => {
+                    canvas.remove(object);
+                });
+                canvas.remove(activeSelection);
+            }
+            else {
+                canvas.remove(activeObject);
+            }
+        }
+    }
     return <>
         <div className="relative bg-white border-2 p-1 rounded-full z-50 m-3 ml-0 flex flex-row gap-1">
             <button
                 onClick={duplicate}
                 className={cn("transition-all group rounded-full p-3 hover:bg-purple-400 active:bg-purple-200 border-2", "border-transparent bg-transparent ")}>
                 <Copy size={20} className="transition-all group-hover:text-white" />
+            </button>
+            <button
+                onClick={deleteSelection}
+                className={cn("transition-all group rounded-full p-3 hover:bg-purple-400 active:bg-purple-200 border-2", "border-transparent bg-transparent ")}>
+                <Trash size={20} className="transition-all group-hover:text-white" />
             </button>
         </div>
     </>
