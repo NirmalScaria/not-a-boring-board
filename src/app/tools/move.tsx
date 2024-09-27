@@ -60,14 +60,15 @@ export const MoveToolbar = ({ canvas }: { canvas: Canvas | null }) => {
                 const activeSelection = activeObject as ActiveSelection;
                 const objects = activeSelection.getObjects();
                 const clones = await Promise.all(objects.map(async (object) => {
-                    return object.clone();
+                    const clone = await object.clone();
+                    canvas.add(clone); 
+                    return clone;
                 }));
-                const group = new Group(clones, {
+                const newSelection = new ActiveSelection(clones, {
                     left: activeSelection.left + 10,
                     top: activeSelection.top + 10
                 });
-                canvas.add(group);
-                canvas.setActiveObject(group);
+                canvas.setActiveObject(newSelection);
                 canvas.requestRenderAll();
             }
             else {
@@ -96,7 +97,7 @@ export const MoveToolbar = ({ canvas }: { canvas: Canvas | null }) => {
             objects.forEach((object) => {
                 object.set('active', true);
             });
-            
+
             const newSelection = new ActiveSelection(objects, 
             );
             canvas.setActiveObject(newSelection);
