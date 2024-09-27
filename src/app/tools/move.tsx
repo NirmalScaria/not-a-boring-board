@@ -1,6 +1,7 @@
 import { cn } from "@/lib/utils";
 import { ActiveSelection, Canvas, Group } from "fabric";
 import { Copy, Trash } from "lucide-react";
+import { useState, useEffect } from "react";
 
 export const initialiseMove = (canvas: Canvas) => {
     canvas.isDrawingMode = false;
@@ -29,6 +30,24 @@ export const initialiseMove = (canvas: Canvas) => {
 }
 
 export const MoveToolbar = ({ canvas }: { canvas: Canvas | null }) => {
+    const [isObjectSelected, setIsObjectSelected] = useState(false);
+
+    useEffect(() => {
+        if (!canvas) return;
+
+        const updateSelection = () => {
+            setIsObjectSelected(!!canvas.getActiveObject());
+        };
+
+        canvas.on("selection:created", updateSelection);
+        canvas.on("selection:cleared", updateSelection);
+
+        return () => {
+            canvas.off("selection:created", updateSelection);
+            canvas.off("selection:cleared", updateSelection);
+        };
+    }, [canvas]);
+
     async function duplicate() {
         if (!canvas) return;
         const activeObject = canvas.getActiveObject();
@@ -78,17 +97,19 @@ export const MoveToolbar = ({ canvas }: { canvas: Canvas | null }) => {
         }
     }
     return <>
-        <div className="relative bg-white border-2 p-1 rounded-full z-50 m-3 ml-0 flex flex-row gap-1">
-            <button
-                onClick={duplicate}
-                className={cn("transition-all group rounded-full p-3 hover:bg-purple-400 active:bg-purple-200 border-2", "border-transparent bg-transparent ")}>
-                <Copy size={20} className="transition-all group-hover:text-white" />
-            </button>
-            <button
-                onClick={deleteSelection}
-                className={cn("transition-all group rounded-full p-3 hover:bg-purple-400 active:bg-purple-200 border-2", "border-transparent bg-transparent ")}>
-                <Trash size={20} className="transition-all group-hover:text-white" />
-            </button>
-        </div>
+        {isObjectSelected && (
+            <div className="relative bg-white border-2 p-1 rounded-full z-50 m-3 ml-0 flex flex-row gap-1">
+                <button
+                    onClick={duplicate}
+                    className={cn("transition-all group rounded-full p-3 hover:bg-purple-400 active:bg-purple-200 border-2", "border-transparent bg-transparent ")}>
+                    <Copy size={20} className="transition-all group-hover:text-white" />
+                </button>
+                <button
+                    onClick={deleteSelection}
+                    className={cn("transition-all group rounded-full p-3 hover:bg-purple-400 active:bg-purple-200 border-2", "border-transparent bg-transparent ")}>
+                    <Trash size={20} className="transition-all group-hover:text-white" />
+                </button>
+            </div>
+        )}
     </>
 }
