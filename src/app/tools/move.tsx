@@ -1,7 +1,8 @@
 import { cn } from "@/lib/utils";
 import { ActiveSelection, Canvas, Group } from "fabric";
-import { Copy, Link, Trash } from "lucide-react";
+import { ArrowDown01, Copy, Link, Trash } from "lucide-react";
 import { useEffect, useState } from "react";
+import { ArrayItem } from "./array";
 
 export const initialiseMove = (canvas: Canvas) => {
     canvas.isDrawingMode = false;
@@ -32,6 +33,7 @@ export const initialiseMove = (canvas: Canvas) => {
 export const MoveToolbar = ({ canvas }: { canvas: Canvas | null }) => {
     const [isObjectSelected, setIsObjectSelected] = useState(false);
     const [isMultipleObjectsSelected, setIsMultipleObjectsSelected] = useState(false);
+    const [isArraySelected, setIsArraySelected] = useState(false);
 
     useEffect(() => {
         if (!canvas) return;
@@ -39,6 +41,7 @@ export const MoveToolbar = ({ canvas }: { canvas: Canvas | null }) => {
         const updateSelection = () => {
             setIsObjectSelected(!!canvas.getActiveObject());
             setIsMultipleObjectsSelected(canvas.getActiveObject()?.type == "activeselection");
+            setIsArraySelected(canvas.getActiveObject()?.get("isArray") == true);
         };
 
         canvas.on("selection:created", updateSelection);
@@ -112,6 +115,14 @@ export const MoveToolbar = ({ canvas }: { canvas: Canvas | null }) => {
             }
         }
     }
+    function sortArray() {
+        if (!canvas) return;
+        const activeObject = canvas.getActiveObject();
+        if (activeObject && activeObject.get("isArray") == true) {
+            const array = activeObject.get("arrayItem") as ArrayItem;
+            array.sort();
+        }
+    }
     return <>
         {isObjectSelected && (
             <div className="relative bg-white border-2 p-1 rounded-full z-50 m-3 ml-0 flex flex-row gap-1">
@@ -130,6 +141,13 @@ export const MoveToolbar = ({ canvas }: { canvas: Canvas | null }) => {
                         onClick={group}
                         className={cn("transition-all group rounded-full p-3 hover:bg-purple-400 active:bg-purple-200 border-2", "border-transparent bg-transparent ")}>
                         <Link size={20} className="transition-all group-hover:text-white" />
+                    </button>
+                }
+                {
+                    isArraySelected && <button
+                        onClick={sortArray}
+                        className={cn("transition-all group rounded-full p-3 hover:bg-purple-400 active:bg-purple-200 border-2", "border-transparent bg-transparent ")}>
+                        <ArrowDown01 size={20} className="transition-all group-hover:text-white" />
                     </button>
                 }
             </div>

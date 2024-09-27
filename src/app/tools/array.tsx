@@ -1,6 +1,6 @@
-import { Canvas, FabricObject, IText, Rect, TPointerEvent, TPointerEventInfo } from 'fabric';
+import { Canvas, FabricObject, Group, IText, Rect, TPointerEvent, TPointerEventInfo } from 'fabric';
 
-class ArrayItem {
+export class ArrayItem {
     declare x1: number;
     declare y1: number;
     declare x2: number;
@@ -9,6 +9,7 @@ class ArrayItem {
     declare rects: Rect[];
     declare numbers: IText[];
     declare canvas: Canvas;
+    declare thisGroup: Group;
     constructor(canvas: Canvas, x1: number, y1: number, x2: number, y2: number) {
         this.x1 = x1;
         this.y1 = y1;
@@ -18,6 +19,16 @@ class ArrayItem {
         this.indices = [];
         this.numbers = [];
         this.rects = [];
+    }
+    sort() {
+        const sortedNumbers = [...this.numbers].sort((a, b) => parseInt(a.text) - parseInt(b.text)).map(number => number.text);
+        for (let i = 0; i < sortedNumbers.length; i++) {
+            this.numbers[i].set({ text: sortedNumbers[i] });
+        }
+        this.thisGroup.set({
+            arrayItem: this,
+        })
+        this.canvas.requestRenderAll();
     }
     draw(x2: number, y2: number) {
         if (x2 - this.x1 < 5) return;
@@ -94,6 +105,13 @@ class ArrayItem {
             this.canvas.setActiveObject(rect);
         })
         this.canvas.discardActiveObject();
+        const group = new Group([...this.rects, ...this.indices, ...this.numbers]);
+        group.set({
+            isArray: true,
+            arrayItem: this,
+        })
+        this.canvas.add(group);
+        this.thisGroup = group;
     }
 }
 
