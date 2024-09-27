@@ -3,5 +3,6 @@ export enum ToolItemName {
     Hand,
     Laser,
     Array,
-    Move
+    Move,
+    Eraser
 }

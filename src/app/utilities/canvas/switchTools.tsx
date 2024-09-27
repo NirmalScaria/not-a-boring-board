@@ -1,5 +1,6 @@
 import { ToolItemName } from "@/app/enums/toosl";
 import { initialiseArray } from "@/app/tools/array";
+import { initialiseEraser } from "@/app/tools/eraser";
 import { initialiseHand } from "@/app/tools/hand";
 import { initializeLaser } from "@/app/tools/laser";
 import { initialiseMove, MoveToolbar } from "@/app/tools/move";
@@ -42,6 +43,10 @@ export function switchTools(canvas: Canvas | null, tool: ToolItemName) {
         case ToolItemName.Move:
             const disposeMove = initialiseMove(canvas);
             activeDispose = disposeMove;
+            break;
+        case ToolItemName.Eraser:
+            const disposeEraser = initialiseEraser(canvas);
+            activeDispose = disposeEraser;
             break;
     }
 }
